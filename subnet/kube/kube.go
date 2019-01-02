@@ -25,7 +25,6 @@ import (
 
 	"github.com/coreos/flannel/pkg/ip"
 	"github.com/coreos/flannel/subnet"
-	"github.com/golang/glog"
 	"golang.org/x/net/context"
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -39,6 +38,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/klog"
 )
 
 var (
@@ -114,14 +114,14 @@ func NewSubnetManager(apiUrl, kubeconfig, prefix, netConfPath string) (subnet.Ma
 	}
 	go sm.Run(context.Background())
 
-	glog.Infof("Waiting %s for node controller to sync", nodeControllerSyncTimeout)
+	klog.Infof("Waiting %s for node controller to sync", nodeControllerSyncTimeout)
 	err = wait.Poll(time.Second, nodeControllerSyncTimeout, func() (bool, error) {
 		return sm.nodeController.HasSynced(), nil
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error waiting for nodeController to sync state: %v", err)
 	}
-	glog.Infof("Node controller sync successful")
+	klog.Infof("Node controller sync successful")
 
 	return sm, nil
 }
@@ -159,12 +159,12 @@ func newKubeSubnetManager(c clientset.Interface, sc *subnet.Config, nodeName, pr
 				if !isNode {
 					deletedState, ok := obj.(cache.DeletedFinalStateUnknown)
 					if !ok {
-						glog.Infof("Error received unexpected object: %v", obj)
+						klog.Infof("Error received unexpected object: %v", obj)
 						return
 					}
 					node, ok = deletedState.Obj.(*v1.Node)
 					if !ok {
-						glog.Infof("Error deletedFinalStateUnknown contained non-Node object: %v", deletedState.Obj)
+						klog.Infof("Error deletedFinalStateUnknown contained non-Node object: %v", deletedState.Obj)
 						return
 					}
 					obj = node
@@ -187,7 +187,7 @@ func (ksm *kubeSubnetManager) handleAddLeaseEvent(et subnet.EventType, obj inter
 
 	l, err := ksm.nodeToLease(*n)
 	if err != nil {
-		glog.Infof("Error turning node %q to lease: %v", n.ObjectMeta.Name, err)
+		klog.Infof("Error turning node %q to lease: %v", n.ObjectMeta.Name, err)
 		return
 	}
 	ksm.events <- subnet.Event{et, l}
@@ -207,7 +207,7 @@ func (ksm *kubeSubnetManager) handleUpdateLeaseEvent(oldObj, newObj interface{})
 
 	l, err := ksm.nodeToLease(*n)
 	if err != nil {
-		glog.Infof("Error turning node %q to lease: %v", n.ObjectMeta.Name, err)
+		klog.Infof("Error turning node %q to lease: %v", n.ObjectMeta.Name, err)
 		return
 	}
 	ksm.events <- subnet.Event{subnet.EventAdded, l}
@@ -244,7 +244,7 @@ func (ksm *kubeSubnetManager) AcquireLease(ctx context.Context, attrs *subnet.Le
 		n.Annotations[ksm.annotations.BackendData] = string(bd)
 		if n.Annotations[ksm.annotations.BackendPublicIPOverwrite] != "" {
 			if n.Annotations[ksm.annotations.BackendPublicIP] != n.Annotations[ksm.annotations.BackendPublicIPOverwrite] {
-				glog.Infof("Overriding public ip with '%s' from node annotation '%s'",
+				klog.Infof("Overriding public ip with '%s' from node annotation '%s'",
 					n.Annotations[ksm.annotations.BackendPublicIPOverwrite],
 					ksm.annotations.BackendPublicIPOverwrite)
 				n.Annotations[ksm.annotations.BackendPublicIP] = n.Annotations[ksm.annotations.BackendPublicIPOverwrite]
@@ -297,7 +297,7 @@ func (ksm *kubeSubnetManager) WatchLeases(ctx context.Context, cursor interface{
 }
 
 func (ksm *kubeSubnetManager) Run(ctx context.Context) {
-	glog.Infof("Starting kube subnet manager")
+	klog.Infof("Starting kube subnet manager")
 	ksm.nodeController.Run(ctx.Done())
 }
 

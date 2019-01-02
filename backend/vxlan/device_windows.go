@@ -21,7 +21,7 @@ import (
 	"github.com/Microsoft/hcsshim/hcn"
 	"github.com/buger/jsonparser"
 	"github.com/coreos/flannel/pkg/ip"
-	log "github.com/golang/glog"
+	log "k8s.io/klog"
 	"github.com/juju/errors"
 	"github.com/rakelkar/gonetsh/netsh"
 	"k8s.io/apimachinery/pkg/util/wait"
