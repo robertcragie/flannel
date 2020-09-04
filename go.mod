@@ -20,6 +20,7 @@ require (
 	github.com/joho/godotenv v0.0.0-20161216230537-726cc8b906e3
 	github.com/jonboulle/clockwork v0.1.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
+	github.com/pion/webrtc/v2 v2.2.24
 	github.com/pkg/errors v0.9.1
 	github.com/rakelkar/gonetsh v0.0.0-20190930180311-e5c5ffe4bdf0
 	github.com/rancher/go-powershell v0.0.0-20200701182037-6845e6fcfa79 // indirect
@@ -29,7 +30,7 @@ require (
 	github.com/ugorji/go v0.0.0-20170107133203-ded73eae5db7 // indirect
 	github.com/vishvananda/netlink v0.0.0-20170220200719-fe3b5664d23a
 	github.com/vishvananda/netns v0.0.0-20170219233438-54f0e4339ce7
-	golang.org/x/net v0.0.0-20191004110552-13f9640d40b9
+	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	google.golang.org/api v0.4.0
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
